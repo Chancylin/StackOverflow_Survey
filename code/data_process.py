@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.preprocessing import MultiLabelBinarizer
+from sklearn.preprocessing import OrdinalEncoder
+from sklearn.feature_selection import mutual_info_classif
 
 def extract_data_related(df_survey):
     """Prepare the rows that have a data-related roles from the survey data"""
@@ -70,6 +72,43 @@ def parse_age_year(df, variables=['Age1stCode', 'YearsCode', 'YearsCodePro']):
             raise ValueError(f'only process {* variables,}')
     return df
 
+def cal_mutual_info(df, target_var='loan_status', disc_features_only=True):
+    df = df.copy()
+
+    df_f_type = df.dtypes
+    df_f_type = df_f_type.loc[~df_f_type.index.isin([target_var])].copy()
+    cols_if_num = df_f_type.apply(lambda x: np.issubdtype(x, np.number))
+    discrete_f = ~cols_if_num
+    # get all categorical features
+    cols_num = cols_if_num[cols_if_num].index.tolist()
+    cols_cat = cols_if_num[~cols_if_num].index.tolist()
+
+    for col_cat in cols_cat:
+        df[col_cat] = df[col_cat].fillna('Missing')
+
+    for col_num in cols_num:
+        df[col_num] = df[col_num].fillna(df[col_num].mean())
+
+    enc = OrdinalEncoder()
+    df[cols_cat] = enc.fit_transform(df[cols_cat])
+    enc = OrdinalEncoder()
+    df.loc[:, target_var] = enc.fit_transform(df[[target_var]])
+
+
+    if not disc_features_only:
+        all_features = df_f_type.index.tolist()
+        mutual_info = mutual_info_classif(df[all_features], df[target_var].values,
+                                          discrete_features=discrete_f,
+                                          n_neighbors=20,
+                                          random_state=123)
+        df_mutual_info = pd.DataFrame(data=zip(all_features, mutual_info), columns=['columns', 'mutual_info'])
+        return df_mutual_info
+    else:
+
+        mutual_info = mutual_info_classif(df[cols_cat], df[target_var].values,
+                                          discrete_features=True)
+        df_mutual_info = pd.DataFrame(data=zip(cols_cat, mutual_info), columns=['columns', 'mutual_info'])
+        return df_mutual_info
 
 
 class StringtoListTranformer(BaseEstimator, TransformerMixin):
