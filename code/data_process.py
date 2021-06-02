@@ -158,7 +158,6 @@ class ListColumnsEncoder(BaseEstimator, TransformerMixin):
                 columns=self.encoder_dict_[feature].classes_,
                 index=X.index)
 
-            
             X = pd.concat([X, f_encoded], axis=1).drop(columns=[feature])
         return X
 
