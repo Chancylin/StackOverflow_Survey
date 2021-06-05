@@ -1,0 +1,8 @@
+matplotlib==3.1.2
+pandas==1.0.3
+seaborn==0.11.1
+scikit-learn==0.23.2
+category_encoders==2.2.2
+shap==0.35.0
+xgboost==1.0.2
+hiplot==0.1.24
