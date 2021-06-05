@@ -5,12 +5,21 @@ from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.preprocessing import OrdinalEncoder
 from sklearn.feature_selection import mutual_info_classif
 
+
 def extract_data_related(df_survey):
     """Prepare the rows that have a data-related roles from the survey data"""
+
+    # keep only employed instances and not-null JobSat
+    valid_employed = ['Employed full-time', 'Employed part-time',
+                      'Independent contractor, freelancer, or self-employed']
+    valid_employed_cond = df_survey['Employment'].isin(valid_employed)
+
+    df_survey = df_survey[valid_employed_cond].copy()
+
     df_survey['data_related'] = df_survey['DevType'].\
     str.contains('data(?![a-z])', case=False, regex=True)
 
-    df_data = df_survey[df_survey['data_related']==True].copy()
+    df_data = df_survey[df_survey['data_related'] == True].copy()
 
     # replace ',' by '_' so we can split the string of DevType into a list later
     df_data['DevType_list'] = df_data['DevType'].str.replace(', ', '_').str.split(';')
@@ -93,7 +102,6 @@ def cal_mutual_info(df, target_var='loan_status', disc_features_only=True):
     df[cols_cat] = enc.fit_transform(df[cols_cat])
     enc = OrdinalEncoder()
     df.loc[:, target_var] = enc.fit_transform(df[[target_var]])
-
 
     if not disc_features_only:
         all_features = df_f_type.index.tolist()
