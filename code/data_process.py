@@ -81,7 +81,16 @@ def parse_age_year(df, variables=['Age1stCode', 'YearsCode', 'YearsCodePro']):
             raise ValueError(f'only process {* variables,}')
     return df
 
-def cal_mutual_info(df, target_var='loan_status', disc_features_only=True):
+
+def cal_mutual_info(df, target_var=None, disc_features_only=True):
+    """Calculate mutual information for feature selection, based on mutual_info_classif from sklearn.feature_selection.
+
+    :param df: Pandas dataframe
+    :param target_var: target variable
+    :param disc_features_only: boolean, calculate mutual information for discrete feature only
+    :return:
+        a Pandas dataframe with mutual information for features
+    """
     df = df.copy()
 
     df_f_type = df.dtypes
@@ -120,6 +129,8 @@ def cal_mutual_info(df, target_var='loan_status', disc_features_only=True):
 
 
 class StringtoListTranformer(BaseEstimator, TransformerMixin):
+    """Scikit-learn transformer to convert the feature which is a string with fields separated by comma into a column
+    of a list"""
     def __init__(self, variables=None):
         if not isinstance(variables, list):
             self.variables = [variables]
@@ -139,6 +150,7 @@ class StringtoListTranformer(BaseEstimator, TransformerMixin):
 
 
 class ListColumnsEncoder(BaseEstimator, TransformerMixin):
+    """Scikit-learn transformer to convert a feature column of a list in to multiple binary feature columns"""
     def __init__(self, variables=None):
         
         if not isinstance(variables, list):
