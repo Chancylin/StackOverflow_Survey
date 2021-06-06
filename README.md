@@ -8,9 +8,9 @@
 In this repository, we use [Stack Overflow Annual Developer Survey data](https://insights.stackoverflow.com/survey) 
 to do some exploratory analyses of data jobs (Data Scientist, Data Analyst, Data Engineer). 
 Analyses include facts on salary, job satisfaction, change of the data jobs (2019 v.s. 2020). 
-Machine learning modelling has been also used to predict job satisfaction.
+Machine learning modelling has also been used to predict job satisfaction.
 
-A medium post about the analyses results can be found here.
+A medium post about the analyses results can be found [here](https://lcxustc.medium.com/salary-satisfaction-trend-of-data-jobs-f47bdf72afa3).
 
 ### 2. File Structure
     
